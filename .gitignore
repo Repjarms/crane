@@ -1,0 +1,9 @@
+# build output
+crane
+
+# environment variables
+.env
+
+# vim swap files
+*.swp
+*.swo
