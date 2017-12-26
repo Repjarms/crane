@@ -1,6 +1,12 @@
 # environment variables
 .env
 
+# daemon files
+pid
+
+# process logs
+log
+
 # vim swap files
 *.swp
 *.swo
