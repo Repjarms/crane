@@ -37,7 +37,6 @@ func dockerPull(r string) {
 	}
 
 	fmt.Println("Docker pull script run successfully")
-	os.Exit(0)
 }
 
 func handler(w http.ResponseWriter, req *http.Request) {
@@ -50,9 +49,14 @@ func handler(w http.ResponseWriter, req *http.Request) {
 		http.Error(w, err.Error(), 400)
 		return
 	}
+
+	// send response header
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Payload accepted. Pulling " + p.Repository.Repo_Name + "\n"))
+
 	fmt.Println(p.Callback_Url)
 	dockerPull(p.Repository.Repo_Name)
-	w.WriteHeader(http.StatusOK)
 }
 
 func main() {
@@ -79,16 +83,20 @@ func main() {
 	log.Print("----------------")
 	log.Print("crane daemon started")
 
-	// TODO: read env variables
+	// read environment variables
 	err = godotenv.Load()
 	if err != nil {
 		log.Fatal("No .env file found! Please make one using env.example as a mock")
 	}
-	// TODO: need to read cert and key for https
+
+	// set certification and key
 	certFileAndPath := os.Getenv("CERT_FILE_AND_PATH")
 	keyFileAndPath := os.Getenv("KEY_FILE_AND_PATH")
 
+	// add routes
 	http.HandleFunc("/", handler)
+
+	// serve HTTPS
 	err = http.ListenAndServeTLS(":3333", certFileAndPath, keyFileAndPath, nil)
 	if err != nil {
 		log.Fatal(err)
