@@ -52,6 +52,7 @@ func handler(w http.ResponseWriter, req *http.Request) {
 	}
 	fmt.Println(p.Callback_Url)
 	dockerPull(p.Repository.Repo_Name)
+	w.WriteHeader(http.StatusOK)
 }
 
 func main() {
