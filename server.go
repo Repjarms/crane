@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/sevlyar/go-daemon"
 	"log"
 	"net/http"
 	"os"
@@ -28,13 +29,17 @@ func dockerPull(r string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(dir)
-	cmd := string(dir) + "/dockerPull.sh"
-	if err := exec.Command(cmd, r).Run(); err != nil {
-		log.Println(err)
+
+	// point command to dockerpull script
+	cmdPath := string(dir) + "/dockerPull.sh"
+	cmd := exec.Command(cmdPath, r)
+	err = cmd.Run()
+	if err != nil {
 		os.Exit(1)
 	}
-	fmt.Println("Docker ran")
+
+	fmt.Println("Docker pull script run successfully")
+	os.Exit(0)
 }
 
 func handler(w http.ResponseWriter, req *http.Request) {
@@ -52,6 +57,28 @@ func handler(w http.ResponseWriter, req *http.Request) {
 }
 
 func main() {
+
+	cntxt := &daemon.Context{
+		PidFileName: "pid",
+		PidFilePerm: 0644,
+		LogFileName: "log",
+		LogFilePerm: 0640,
+		WorkDir:     "./",
+		Umask:       027,
+		Args:        []string{"[go-daemon process]"},
+	}
+
+	d, err := cntxt.Reborn()
+	if err != nil {
+		log.Fatal("Unable to run crane daemon: ", err)
+	}
+	if d != nil {
+		return
+	}
+	defer cntxt.Release()
+
+	log.Print("----------------")
+	log.Print("crane daemon started")
 
 	http.HandleFunc("/", handler)
 	http.ListenAndServe(":3333", nil)
