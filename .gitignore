@@ -7,6 +7,9 @@ pid
 # process logs
 log
 
+# any certificate files
+*.pem
+
 # vim swap files
 *.swp
 *.swo

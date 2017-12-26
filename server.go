@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/joho/godotenv"
 	"github.com/sevlyar/go-daemon"
 	"log"
 	"net/http"
@@ -80,6 +81,18 @@ func main() {
 	log.Print("----------------")
 	log.Print("crane daemon started")
 
+	// TODO: read env variables
+	err = godotenv.Load()
+	if err != nil {
+		log.Fatal("No .env file found! Please make one using env.example as a mock")
+	}
+	// TODO: need to read cert and key for https
+	certFileAndPath := os.Getenv("CERT_FILE_AND_PATH")
+	keyFileAndPath := os.Getenv("KEY_FILE_AND_PATH")
+
 	http.HandleFunc("/", handler)
-	http.ListenAndServe(":3333", nil)
+	err = http.ListenAndServeTLS(":3333", certFileAndPath, keyFileAndPath, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
