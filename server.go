@@ -15,13 +15,10 @@ import (
 type DockerPayload struct {
 	Callback_Url string
 	Repository   struct {
-		Comment_Count string
-		Description   string
-		Is_Trusted    bool
-		Is_Private    bool
-		Status        string
-		Repo_Url      string
-		Repo_Name     string
+		Is_Trusted bool
+		Is_Private bool
+		Repo_Url   string
+		Repo_Name  string
 	}
 }
 
