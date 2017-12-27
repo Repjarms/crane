@@ -44,6 +44,8 @@ func handler(w http.ResponseWriter, req *http.Request) {
 	if req.Body == nil {
 		http.Error(w, "Please provide a request body", 400)
 	}
+
+	// attempt to parse body
 	err := json.NewDecoder(req.Body).Decode(&p)
 	if err != nil {
 		http.Error(w, err.Error(), 400)
